@@ -1,0 +1,77 @@
+import random
+import sys
+
+LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+def main():
+    message = ''
+
+    # Read message from a file or input
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], 'r') as f:
+            message = f.read()
+    else:
+        message = input("Enter your message: ")
+
+    # Get mode (Encrypt or Decrypt)
+    mode = input("E for Encrypt, D for Decrypt: ").upper()
+    if mode not in ('E', 'D'):
+        print("Invalid mode. Use 'E' for Encrypt or 'D' for Decrypt.")
+        return
+
+    # Get or generate a valid key
+    key = ''
+    while not checkKey(key):
+        key = input("Enter 26 ALPHA key (leave blank for random key): ")
+        if key == '':
+            key = getRandomKey()
+        if not checkKey(key):
+            print('Error: Invalid key. Ensure it is a permutation of A-Z.')
+
+    # Translate the message
+    translated = translateMessage(message, key, mode)
+    print('Using key: %s' % key)
+
+    # Save or display the result
+    if len(sys.argv) > 1:
+        fileOut = 'enc.' + sys.argv[1]
+        with open(fileOut, 'w') as f:
+            f.write(translated)
+        print('Success! File written to: %s' % fileOut)
+    else:
+        print('Result: ' + translated)
+
+def checkKey(key):
+    """Check if the provided key is a valid substitution cipher key."""
+    return ''.join(sorted(key.upper())) == LETTERS
+
+def translateMessage(message, key, mode):
+    """Encrypt or decrypt the message based on the key and mode."""
+    translated = ''
+    charsA = LETTERS
+    charsB = key.upper()
+
+    # If decrypting, swap the key mappings
+    if mode == 'D':
+        charsA, charsB = charsB, charsA
+
+    for symbol in message:
+        if symbol.upper() in charsA:
+            symIndex = charsA.find(symbol.upper())
+            if symbol.isupper():
+                translated += charsB[symIndex].upper()
+            else:
+                translated += charsB[symIndex].lower()
+        else:
+            translated += symbol
+
+    return translated
+
+def getRandomKey():
+    """Generate a random key for the substitution cipher."""
+    randomList = list(LETTERS)
+    random.shuffle(randomList)
+    return ''.join(randomList)
+
+if __name__ == '__main__':
+    main()
