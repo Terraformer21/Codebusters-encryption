@@ -1,0 +1,359 @@
+import random
+import sys
+import numpy as np
+from cryptography.fernet import Fernet
+
+#LETTERS For aristocrat...
+LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+#The following functions are for aristocrats/patristocrats.
+def aristo():
+    message = ''
+
+    # Read message from a file or input
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], 'r') as f:
+            message = f.read()
+    else:
+        message = input("Enter your message: ")
+
+    # Get mode (Encrypt or Decrypt)
+    #mode = input("E for Encrypt, D for Decrypt: ").upper()
+    #if mode not in ('E', 'D'):
+      # print("Invalid mode. Use 'E' for Encrypt or 'D' for Decrypt.")
+       #return
+
+    # Get or generate a valid key
+    key = ''
+    while not checkKey(key):
+        key = input("Enter 26 ALPHA key (leave blank for random key): ")
+        if key == '':
+            key = getRandomKey()
+        if not checkKey(key):
+            print('Error: Invalid key. Ensure it is a permutation of A-Z.')
+
+    # Translate the message
+    translated = translateMessage(message, key, #mode
+    )
+    print('Using key: %s' % key)
+
+    # Save or display the result
+    if len(sys.argv) > 1:
+        fileOut = 'enc.' + sys.argv[1]
+        with open(fileOut, 'w') as f:
+            f.write(translated)
+        print('Success! File written to: %s' % fileOut)
+    else:
+        print('Result: ' + translated)
+
+
+def patristo():
+    message = ''
+
+    # Read message from a file or input
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], 'r') as f:
+            message = f.read()
+    else:
+        message = input("Enter your message: ")
+
+    # Get mode (Encrypt or Decrypt)
+    #mode = input("E for Encrypt, D for Decrypt: ").upper()
+    #if mode not in ('E', 'D'):
+      # print("Invalid mode. Use 'E' for Encrypt or 'D' for Decrypt.")
+       #return
+
+    # Get or generate a valid key
+    key = ''
+    while not checkKey(key):
+        key = input("Enter 26 ALPHA key (leave blank for random key): ")
+        if key == '':
+            key = getRandomKey()
+        if not checkKey(key):
+            print('Error: Invalid key. Ensure it is a permutation of A-Z.')
+
+    # Translate the message
+    translated = translateMessage_PAT(message, key, #mode
+    )
+    print('Using key: %s' % key)
+
+    # Save or display the result
+    if len(sys.argv) > 1:
+        fileOut = 'enc.' + sys.argv[1]
+        with open(fileOut, 'w') as f:
+            f.write(translated)
+        print('Success! File written to: %s' % fileOut)
+    else:
+        print('Result: ' + translated)
+
+
+def checkKey(key):
+    """Check if the provided key is a valid substitution cipher key."""
+    return ''.join(sorted(key.upper())) == LETTERS
+
+def translateMessage(message, key, #mode
+):
+    """Encrypt or decrypt the message based on the key."""
+    translated = ''
+    charsA = LETTERS
+    charsB = key.upper()
+
+    # If decrypting, swap the key mappings
+    #if mode == 'D':
+       # charsA, charsB = charsB, charsA
+
+    for symbol in message:
+        if symbol.upper() in charsA:
+            symIndex = charsA.find(symbol.upper())
+            if symbol.isupper():
+                translated += charsB[symIndex].upper()
+            else:
+                translated += charsB[symIndex].lower()
+        else:
+            translated += symbol
+
+    return translated
+
+def translateMessage_PAT(message, key, #mode
+):
+    """Encrypt or decrypt the message based on the key and mode."""
+    translated = ''
+    charsA = LETTERS
+    charsB = key.upper()
+
+    # If decrypting, swap the key mappings
+    #if mode == 'D':
+       # charsA, charsB = charsB, charsA
+    for symbol in message:
+        if symbol.upper() in charsA:
+            symIndex = charsA.find(symbol.upper())
+            if symbol.isupper():
+                translated += charsB[symIndex].upper()
+            else:
+                translated += charsB[symIndex].lower()
+        else:
+            translated += symbol
+
+    #Format into five letter blocks.
+    spaceless_translate = translated.replace(' ', '').upper()
+    supertranslate = " ".join(spaceless_translate[i:i+5] for i in range (0, len(spaceless_translate), 5))
+    
+    return supertranslate
+
+
+def getRandomKey():
+    """Generate a random key for the substitution cipher."""
+    randomList = list(LETTERS)
+    random.shuffle(randomList)
+    return ''.join(randomList)
+
+#Baconian function.
+def bacon_yum(text):
+    baconian_dict = {
+        'A': 'AAAAA', 'B': 'AAAAB', 'C': 'AAABA', 'D': 'AAABB', 'E': 'AABAA',
+        'F': 'AABAB', 'G': 'AABBA', 'H': 'AABBB', 'I': 'ABAAA', 'J': 'ABAAA', 
+        'K': 'ABAAB', 'L': 'ABABA', 'M': 'ABABB', 'N': 'ABBAA', 'O': 'ABBAB', 
+        'P': 'ABBBA', 'Q': 'ABBBB', 'R': 'BAAAA', 'S': 'BAAAB', 'T': 'BAABA', 
+        'U': 'BAABB', 'V': 'BAABB', 'W': 'BABAA', 'X': 'BABAB', 'Y': 'BABBA', 
+        'Z': 'BABBB'
+    }
+
+    encoded_text = ''
+    for char in text.upper():
+        if char.isalpha():
+            encoded_text += baconian_dict[char]
+        else: 
+            encoded_text += char
+    #Format into five letter blocks.
+    blocky = encoded_text.replace(' ', '').upper()
+    blocky_bacon = " ".join(blocky[i:i+5] for i in range (0, len(blocky), 5))
+
+    return blocky_bacon
+#Binary function.
+def binary(text):
+    binary_dict = {
+        'A': '01000001', 'B': '01000010', 'C': '01000011', 'D': '01000100', 'E': '01000101',
+        'F': '01000110', 'G': '01000111', 'H': '01001000', 'I': '01001001', 'J': '01001010', 
+        'K': '01001011', 'L': '01001100', 'M': '01001101', 'N': '01001110', 'O': '01001111', 
+        'P': '01010000', 'Q': '01010001', 'R': '01010010', 'S': '01010011', 'T': '01010100', 
+        'U': '01010101', 'V': '01010110', 'W': '01010111', 'X': '01011000', 'Y': '01011001', 
+        'Z': '01011010', 'a': '01100001', 'b': '01100010', 'c': '01100011', 'd': '01100100',
+        'e': '01100101', 'f': '01100110', 'g': '01100111', 'h': '01101000', 'i': '01101001',
+        'j': '01101010', 'k': '01101011', 'l': '01101100', 'm': '01101101', 'n': '01101110',
+        'o': '01101111', 'p': '01110000', 'q': '01110001', 'r': '01110010', 's': '01110011',
+        't': '01110100', 'u': '01110101', 'v': '01110110', 'w': '01110111', 'x': '01111000',
+        'y': '01111001', 'z': '01111010'
+    }
+    encoded_text = ''
+    for char in text:
+        if char.isalpha():
+            encoded_text += binary_dict[char]
+        else: 
+            encoded_text += char
+    #Format into eight letter blocks.
+    blocky = encoded_text.replace(' ', '')
+    blocky_binary = " ".join(blocky[i:i+8] for i in range (0, len(blocky), 8))
+
+    return blocky_binary
+
+#Hill: Convert letters to numbers.
+def letter_to_number(letter):
+    return ord(letter.upper()) - ord('A')
+    # Create inverse substitution dictionary
+
+inverse_substitution = {i: chr(i + ord('A')) for i in range(26)}
+
+#Hill: Encryption function (2x2 only).
+def encrypt2(plaintext, key_matrix):
+    # Convert plaintext to uppercase and remove spaces
+    plaintext = plaintext.upper().replace(" ", "")
+
+    # Pad plaintext if not a multiple of key matrix size
+    if len(plaintext) % 2 != 0:  # Assuming key_matrix is 2x2
+        plaintext += 'X'
+
+    cipher_text = ''
+
+    # Process plaintext in blocks of 2 (key_matrix size)
+    for i in range(0, len(plaintext), 2):
+        block = plaintext[i:i+2]
+        block_vector = np.array([letter_to_number(ch) for ch in block]).reshape(-1, 1)
+
+        # Perform matrix multiplication and modulo operation
+        encrypted_vec = np.dot(key_matrix, block_vector) % 26
+
+        # Convert numbers back to letters
+        encrypted_block = ''.join([inverse_substitution[num[0]] for num in encrypted_vec])
+        cipher_text += encrypted_block
+
+    return cipher_text
+
+
+#Hill: Encryption function (3x3 only).
+def encrypt3(plaintext, key_matrix):
+    # Convert plaintext to uppercase and remove spaces
+    plaintext = plaintext.upper().replace(" ", "")
+
+    # Pad plaintext if not a multiple of key matrix size
+    if len(plaintext) % 3 != 0:  # Assuming key_matrix is 3x3
+        padding_length = 3 - (len(plaintext) % 3)
+        plaintext += 'X' * padding_length
+    
+    cipher_text = ''
+
+    # Process plaintext in blocks of 3 (key_matrix size)
+    for i in range(0, len(plaintext), 3):
+        block = plaintext[i:i+3]
+        block_vector = np.array([letter_to_number(ch) for ch in block]).reshape(-1, 1)
+
+        # Perform matrix multiplication and modulo operation
+        encrypted_vec = np.dot(key_matrix, block_vector) % 26
+
+        # Convert numbers back to letters
+        encrypted_block = ''.join([inverse_substitution[num[0]] for num in encrypted_vec])
+        cipher_text += encrypted_block
+
+    return cipher_text
+
+
+#Introduces program and prompts cipher type.
+def introprints():
+    print("Welcome to Superencryptor! To start, pick a cipher.")
+
+    print(" ") 
+    print("Aristocrat - A")
+    print("Baconian/Binary - B")
+    print('Fernet (not manually solvable) - F')
+    print("Hill 2x2 or 3x3 - H")
+    print("Patristocrat - P")
+    print("Quit program - Q")
+    print(" ")
+#Runs intro function.
+introprints()
+cipher = input("")
+print(" ")
+
+#Aristocrat:
+if cipher in ["A"]: 
+    print("Loading aristocrat program...")
+    aristo()
+#Baconian/binary:
+if cipher in ["B"]:
+    print("Loading Baconian/Binary program...")
+    #Collect plaintext.
+    text = input("Input message here: ")
+    #Runs baconian/binary program based on input.
+    query = input("Convert to binary or baconian?")
+    if query in ["BACONIAN", 'Baconian', 'baconian']:
+        encoded = bacon_yum(text)
+    if query in ['BINARY', 'Binary', 'binary']:
+        encoded = binary(text)
+    else:
+        print("You did not enter either 'binary' or 'baconian' dum dum. Exiting program.")
+        exit() 
+    #Prints result.
+    print(" ")
+    print("Original: ", text)
+    print("Encoded: ", encoded)
+    print(" ")
+#Fernet (ew):
+if cipher in ["F"]:
+    print("Loading fernet program...")
+    message = input("Input message here: ")
+
+    #generate key for encryption and decryption
+    key = Fernet.generate_key()
+
+    #Define class fernet using the key
+    fernet=Fernet(key)
+
+    #Use Fernet class to encrypt the string.
+    #Must be encoded to byte string before encryption
+    encMessage = fernet.encrypt(message.encode())
+
+    print(" ")
+    print("Original string: ", message)
+    print("Encrypted string: ", encMessage)
+    print(" ")
+    exit()
+#Hill (nightmare to code):
+if cipher in ["H"]:
+    Hilltype = input("2x2(A) or 3x3(B)? ")
+    if Hilltype in ["A"]:
+        print("2x2 Hill cipher encryption.")
+       
+        plaintext = input("Insert message here: ")
+        key_matrix_input = input("Insert 2x2 keyword as letters (e.g., ABCD) here: ")
+   
+        # Convert key_matrix_input (letters) to a 2x2 numpy array of numbers
+        key_matrix = np.array([letter_to_number(ch) for ch in key_matrix_input]).reshape(2, 2)
+
+        # Encrypt the plaintext
+        cipher_text = encrypt2(plaintext, key_matrix)
+        print(" ")
+        print("Cipher text:", cipher_text)
+        print(" ")
+    if Hilltype in ["B"]: 
+        print("3x3 Hill cipher encryption.")
+        
+        plaintext = input("Insert message here: ")
+        key_matrix_input = input("Insert 3x3 keyword as letters (e.g., ABCDEFGHI) here: ")
+
+        # Convert key_matrix_input (letters) to a 2x2 numpy array of numbers
+        key_matrix = np.array([letter_to_number(ch) for ch in key_matrix_input]).reshape(3, 3)
+
+        # Encrypt the plaintext
+        cipher_text = encrypt3(plaintext, key_matrix)
+
+        print("Cipher text:", cipher_text)
+
+if cipher in ["P"]: 
+    print("Loading patristocrat program...")
+    patristo()
+
+if cipher in ["Q"]:
+    exit()
+
+else:
+    exit()
+
