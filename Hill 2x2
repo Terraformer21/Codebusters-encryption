@@ -1,0 +1,47 @@
+import numpy as np
+
+print("2x2 Hill cipher encryption.")
+
+# Set letter values to numbers
+def letter_to_number(letter):
+    return ord(letter.upper()) - ord('A')
+
+# Create inverse substitution dictionary
+inverse_substitution = {i: chr(i + ord('A')) for i in range(26)}
+
+# Function to encrypt plaintext using Hill cipher
+def encrypt(plaintext, key_matrix):
+    # Convert plaintext to uppercase and remove spaces
+    plaintext = plaintext.upper().replace(" ", "")
+
+    # Pad plaintext if not a multiple of key matrix size
+    if len(plaintext) % 2 != 0:  # Assuming key_matrix is 2x2
+        plaintext += 'X'
+
+    cipher_text = ''
+
+    # Process plaintext in blocks of 2 (key_matrix size)
+    for i in range(0, len(plaintext), 2):
+        block = plaintext[i:i+2]
+        block_vector = np.array([letter_to_number(ch) for ch in block]).reshape(-1, 1)
+
+        # Perform matrix multiplication and modulo operation
+        encrypted_vec = np.dot(key_matrix, block_vector) % 26
+
+        # Convert numbers back to letters
+        encrypted_block = ''.join([inverse_substitution[num[0]] for num in encrypted_vec])
+        cipher_text += encrypted_block
+
+    return cipher_text
+
+# Get inputs
+plaintext = input("Insert message here: ")
+key_matrix_input = input("Insert 2x2 keyword as letters (e.g., ABCD) here: ")
+
+# Convert key_matrix_input (letters) to a 2x2 numpy array of numbers
+key_matrix = np.array([letter_to_number(ch) for ch in key_matrix_input]).reshape(2, 2)
+
+# Encrypt the plaintext
+cipher_text = encrypt(plaintext, key_matrix)
+
+print("Cipher text:", cipher_text)
