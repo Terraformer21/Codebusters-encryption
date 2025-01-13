@@ -1,0 +1,27 @@
+from cryptography.fernet import Fernet
+
+#Encrypting msg below:
+message = "Science Olympiad (test)"
+
+#generate key for encryption and decryption
+#This one uses fernet for its key but you can use a
+#random key generator as well
+
+key = Fernet.generate_key()
+
+#Define class fernet using the key
+fernet=Fernet(key)
+
+#Use Fernet class to encrypt the string.
+#Must be encoded to byte string before encryption
+encMessage = fernet.encrypt(message.encode())
+
+print("Original string: ", message)
+print("Encrypted string: ", encMessage)
+
+#decrypt encrypted string with Fernet class
+#encoded byte string is returned by decrypt method, 
+#so decode it to string with decode methods
+
+decMessage = fernet.decrypt(encMessage).decode()
+print("Decrypted string: ",decMessage)
