@@ -1,2 +1,9 @@
-print ("The main program (SUPERENCRYPTOR) prompts which of a list of ciphers the user wants to run.")
-print ("It encrypts using aristocrat, patristocrat, hill, fernet, baconian, and binary functions.")
+# Python Encryptor
+The program asks which cipher you would like to encrypt with, and given the plaintext, will spit out an encrypted message.
+## currently available ciphers
++ aristocrat
++ patristocrat
++ hill
++ fernet
++ baconian
++ binary functions
