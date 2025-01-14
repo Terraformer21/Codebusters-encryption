@@ -3,8 +3,10 @@ import sys
 import numpy as np
 from cryptography.fernet import Fernet
 
-#LETTERS For aristocrat...
+#LETTERS For aristocrat.
 LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+#S_Let for xenocrypt.
+S_Let = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'
 
 #The following functions are for aristocrats/patristocrats.
 def aristo():
@@ -46,7 +48,86 @@ def aristo():
     else:
         print('Result: ' + translated)
 
+print("Xenocrypt (aristocrat).")
+print(" ")
 
+#Xenocrypt main function
+def xeno():
+    message = ''
+
+    # Read message from a file or input
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], 'r') as f:
+            message = f.read()
+    else:
+        message = input("Enter your message: ")
+
+    # Get mode (Encrypt or Decrypt)
+    #mode = input("E for Encrypt, D for Decrypt: ").upper()
+    #if mode not in ('E', 'D'):
+        #print("Invalid mode. Use 'E' for Encrypt or 'D' for Decrypt.")
+        #return
+
+    # Get or generate a valid key
+    key = ''
+    while not s_checkKey(key):
+        key = input("Enter 27 ALPHA key (leave blank for random key): ")
+        if key == '':
+            key = s_getRandomKey()
+        if not s_checkKey(key):
+            print('Error: Invalid key. Ensure it is a permutation of A-Z.')
+
+    # Translate the message
+    translated = s_translateMessage(message, key)
+    print('Using key: %s' % key)
+
+    # Save or display the result
+    if len(sys.argv) > 1:
+        fileOut = 'enc.' + sys.argv[1]
+        with open(fileOut, 'w') as f:
+            f.write(translated)
+        print('Success! File written to: %s' % fileOut)
+    else:
+        print('Result: ' + translated)
+
+#Xenocrypt checkKey function
+def s_checkKey(key):
+    """Check if the provided key is a valid substitution cipher key."""
+    return len(key) == len(S_Let) and ''.join(sorted(key.upper())) == ''.join(sorted(S_Let))
+
+#Xenocrypt translate message function
+def s_translateMessage(message, key):
+    """Encrypt or decrypt the message based on the key."""
+    translated = ''
+    charsA = S_Let
+    charsB = key.upper()
+
+    # If decrypting, swap the key mappings
+    #if mode == 'D':
+        #charsA, charsB = charsB, charsA
+
+    for symbol in message:
+        if symbol.upper() in charsA:
+            symIndex = charsA.find(symbol.upper())
+            if symbol.isupper():
+                translated += charsB[symIndex].upper()
+            else:
+                translated += charsB[symIndex].lower()
+        else:
+            translated += symbol
+
+    return translated
+
+#Xenocrypt getRandomKey
+def s_getRandomKey():
+    """Generate a random key for the substitution cipher."""
+    randomList = list(S_Let)
+    random.shuffle(randomList)
+    randomKey = ''.join(randomList)
+    print(f"Generated random key: {randomKey}")
+    return randomKey
+
+#Patristocrat main function
 def patristo():
     message = ''
 
@@ -86,11 +167,12 @@ def patristo():
     else:
         print('Result: ' + translated)
 
-
+#Aristocrat and Patristocrat checkKey function
 def checkKey(key):
     """Check if the provided key is a valid substitution cipher key."""
     return ''.join(sorted(key.upper())) == LETTERS
 
+#Aristocrat translateMessage function
 def translateMessage(message, key, #mode
 ):
     """Encrypt or decrypt the message based on the key."""
@@ -114,6 +196,7 @@ def translateMessage(message, key, #mode
 
     return translated
 
+#Patristocrat translateMessage function
 def translateMessage_PAT(message, key, #mode
 ):
     """Encrypt or decrypt the message based on the key and mode."""
@@ -140,7 +223,7 @@ def translateMessage_PAT(message, key, #mode
     
     return supertranslate
 
-
+#Aristocrat and patristocrat getRandomKey function
 def getRandomKey():
     """Generate a random key for the substitution cipher."""
     randomList = list(LETTERS)
@@ -228,7 +311,6 @@ def encrypt2(plaintext, key_matrix):
 
     return cipher_text
 
-
 #Hill: Encryption function (3x3 only).
 def encrypt3(plaintext, key_matrix):
     # Convert plaintext to uppercase and remove spaces
@@ -255,7 +337,6 @@ def encrypt3(plaintext, key_matrix):
 
     return cipher_text
 
-
 #Introduces program and prompts cipher type.
 def introprints():
     print("Welcome to Superencryptor! To start, pick a cipher.")
@@ -266,18 +347,19 @@ def introprints():
     print('Fernet (not manually solvable) - F')
     print("Hill 2x2 or 3x3 - H")
     print("Patristocrat - P")
+    print("Xenocrypt (Aristocrat) - X")
     print("Quit program - Q")
     print(" ")
 #Runs intro function.
+
 introprints()
 cipher = input("")
 print(" ")
 
-#Aristocrat:
 if cipher in ["A"]: 
     print("Loading aristocrat program...")
     aristo()
-#Baconian/binary:
+
 if cipher in ["B"]:
     print("Loading Baconian/Binary program...")
     #Collect plaintext.
@@ -296,7 +378,7 @@ if cipher in ["B"]:
     print("Original: ", text)
     print("Encoded: ", encoded)
     print(" ")
-#Fernet (ew):
+
 if cipher in ["F"]:
     print("Loading fernet program...")
     message = input("Input message here: ")
@@ -316,7 +398,7 @@ if cipher in ["F"]:
     print("Encrypted string: ", encMessage)
     print(" ")
     exit()
-#Hill (nightmare to code):
+
 if cipher in ["H"]:
     Hilltype = input("2x2(A) or 3x3(B)? ")
     if Hilltype in ["A"]:
@@ -351,9 +433,12 @@ if cipher in ["P"]:
     print("Loading patristocrat program...")
     patristo()
 
+if cipher in ["X"]:
+    print("Loading xenocrypt program...")
+    xeno()
+
 if cipher in ["Q"]:
     exit()
 
 else:
     exit()
-
